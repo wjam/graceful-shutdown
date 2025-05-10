@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-update:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+  - package-ecosystem: "gomod"
+    directories:
+      - "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-update:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
