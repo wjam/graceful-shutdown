@@ -12,9 +12,8 @@ The example has some `TODO` comments in place for things to be done by someone u
 ## Kubernetes behaviour
 
 When a pod has to be terminated, Kubernetes will mark the pod as `Terminating` (triggering any relevant hooks) as well
-as removing the `Pod` from any `Service`.
-
-From https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/.
+as removing the `Pod` from any `Service`. Read the
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) for more information.
 
 Make sure `terminationGracePeriodSeconds` is _more_ than the value of `shutdownPeriod` and `shutdownHardPeriod`
 combined.
