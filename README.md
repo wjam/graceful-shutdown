@@ -17,3 +17,9 @@ as removing the `Pod` from any `Service`. Read the
 
 Make sure `terminationGracePeriodSeconds` is _more_ than the value of `shutdownPeriod` and `shutdownHardPeriod`
 combined.
+
+## Dependencies
+
+It would be nice to remove all external dependencies from the code, but reimplementing the `golang.org/x/sync/errgroup`
+isn't really worth the time. If `errgroup` gets promoted to the standard library
+(e.g. https://github.com/golang/go/issues/57534), then this will be reconsidered.
