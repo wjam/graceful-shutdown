@@ -24,7 +24,7 @@ func main() {
 	// Reminder: `defer` doesn't behave as expected in functions with log.Fatal, os.Exit, etc.
 	rootCtx := context.Background()
 
-	// TODO set up slog in context
+	// TODO use command line flags and/or environment variables to set up slog
 
 	app := app()
 
@@ -38,7 +38,6 @@ func app() http.Handler {
 	mux := http.NewServeMux()
 	// Example readiness endpoint
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
-		// Kubernetes will set the pod state to terminating, removing it from the svc endpoint
 		w.WriteHeader(http.StatusOK)
 	})
 	// Example business logic
@@ -56,6 +55,13 @@ func app() http.Handler {
 func runApp(ctx context.Context, addr string, handler http.Handler) error {
 	rootCtx, cancelRoot := signal.NotifyContext(ctx, signals...)
 	defer cancelRoot()
+
+	/*
+		TODO: handler would need to implement closable and get called here in a defer to clean up external resources
+		  such as DB connections.
+		- context would need to be from rootCtx, WithoutCancel, and with a timeout
+		- any error would need to be error.Join to the returned error
+	*/
 
 	// In-flight requests get a context that won't be immediately cancelled on SIGINT/SIGTERM
 	// so that they can be gracefully stopped.
@@ -83,7 +89,6 @@ func runApp(ctx context.Context, addr string, handler http.Handler) error {
 	case err := <-errCh:
 		if !errors.Is(err, http.ErrServerClosed) {
 			cancelOngoing()
-			// TODO handler would need to implement closable and get called here to clean up external resources (e.g. DB connections)
 			return err
 		}
 	}
@@ -98,8 +103,6 @@ func runApp(ctx context.Context, addr string, handler http.Handler) error {
 		slog.ErrorContext(rootCtx, "Failed to wait for ongoing requests to finish, waiting for forced cancellation")
 		timeSleep(shutdownHardPeriod)
 	}
-
-	// TODO handler would need to implement closable and get called here to clean up external resources (e.g. DB connections)
 
 	slog.InfoContext(rootCtx, "Server shut down")
 	return err
