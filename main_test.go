@@ -36,7 +36,7 @@ func TestRunApp_shouldShutdownGracefullyOnSignal(t *testing.T) {
 
 	require.Eventuallyf(t, func() bool {
 		r, err := http.Get(fmt.Sprintf("http://localhost:%d/quick", port))
-		return err == nil && r.StatusCode == 200
+		return err == nil && r.StatusCode == http.StatusOK
 	}, time.Second, 100*time.Millisecond, "Server did not start up")
 
 	stopRequests := make(chan struct{})
@@ -54,7 +54,7 @@ func TestRunApp_shouldShutdownGracefullyOnSignal(t *testing.T) {
 					if err != nil {
 						return err
 					}
-					if res.StatusCode != 200 {
+					if res.StatusCode != http.StatusOK {
 						return fmt.Errorf("unexpected status code %d", res.StatusCode)
 					}
 					return nil
@@ -91,7 +91,11 @@ func TestRunApp_shouldFailIfServerCannotStartUp(t *testing.T) {
 	// note - port is still in use
 	port := l.Addr().(*net.TCPAddr).Port
 
-	err = runApp(t.Context(), fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	err = runApp(
+		t.Context(),
+		fmt.Sprintf(":%d", port),
+		http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}),
+	)
 	require.Error(t, err)
 }
 
@@ -140,7 +144,7 @@ func TestRunApp_shouldFailIfShutdownFails(t *testing.T) {
 
 	require.Eventuallyf(t, func() bool {
 		r, err := http.Get(fmt.Sprintf("http://localhost:%d/quick", port))
-		return err == nil && r.StatusCode == 200
+		return err == nil && r.StatusCode == http.StatusOK
 	}, time.Second, 100*time.Millisecond, "Server did not start up")
 
 	go func() {

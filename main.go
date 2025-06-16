@@ -71,7 +71,8 @@ func runApp(ctx context.Context, addr string, handler http.Handler) error {
 		BaseContext: func(_ net.Listener) context.Context {
 			return ongoingCtx
 		},
-		Handler: handler,
+		Handler:           handler,
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	errCh := make(chan error)
