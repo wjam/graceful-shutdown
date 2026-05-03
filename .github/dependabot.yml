@@ -1,6 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
+    cooldown: # Give dependency updates time to be reviewed by various security companies
+      default-days: 7
     directory: "/"
     schedule:
       interval: "monthly"
@@ -12,6 +14,8 @@ updates:
           - "minor"
           - "patch"
   - package-ecosystem: "gomod"
+    cooldown: # Give dependency updates time to be reviewed by various security companies
+      default-days: 7
     directories:
       - "/"
     schedule:
